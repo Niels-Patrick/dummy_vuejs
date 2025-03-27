@@ -1,6 +1,7 @@
 <script setup>
   import { ref } from 'vue'
   import { useField, useForm } from 'vee-validate'
+  import Test2 from './Test2.vue'
 
   const { handleSubmit, handleReset } = useForm({
     validationSchema: {
@@ -26,6 +27,7 @@
       },
     },
   })
+
   const name = useField('name')
   const phone = useField('phone')
   const email = useField('email')
@@ -58,6 +60,37 @@
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+  }
+
+  const { handleSubmit2, handleReset2 } = useForm({
+    validationSchema: {
+      name2 (value) {
+        if (value?.length >= 2) return true
+
+        return 'Name needs to be at least 2 characters.'
+      },
+      calories (value) {
+        if (/^[0-9-]/.test(value)) return true
+
+        return 'Please enter numbers only.'
+      },
+    },
+  })
+
+  const name2 = useField('name2')
+  const calories = useField('calories')
+
+  const submit2 = handleSubmit2(values => {
+    addDessert(values)
+  })
+
+  const newDessert = ref({ name: "", calories: null })
+
+  function addDessert(data) {
+    if(data.value.name && data.value.calories) {
+      desserts.value.push({ ...data.value }) // Adding to list
+      newDessert.value = { name: "", calories: null } // Reseting form
+    }
   }
 
   const desserts = ref([
@@ -102,25 +135,10 @@
         calories: 518,
       },
     ])
-
-  const someText = ref('')
-
-  const rules = [
-    value => {
-      if (value) return true
-      return 'You must enter a text.'
-    },
-  ]
-
-  function display_text() {
-    if (someText.value != '') {
-      alert(someText.value)
-    }
-  }
 </script>
 
 <template>
-  <v-card class="pa-4 ma-4" color="blue-lighten-3">
+  <v-card class="pa-4 ma-4" color="blue-lighten-5">
     <v-layout>
       <v-app-bar :elevation="2" color="blue-darken-2">
         <v-app-bar-title>Dummy Project</v-app-bar-title>
@@ -220,40 +238,61 @@
     </v-layout>
     <v-divider
       :thickness="5"
-      color="white"
-      class="border-opacity-25 ma-2"
+      color="orange-lighten-4"
+      class="border-opacity-100 ma-2"
     ></v-divider>
     <v-layout>
       <v-main>
         <v-row>
           <v-col>
-            <v-card title="Please enter some text" class="pa-2 ma-2" width="25%">
-              <v-sheet class="mx-auto" width="75%">
-                <v-form @submit.prevent>
+            <Test2 />
+          </v-col>
+
+          <v-col>
+            <!--
+            <v-card title="Please fill the form" class="pa-2 ma-2" width="50%">
+              <v-container>
+                <form @submit.prevent="submit2">
                   <v-text-field
-                    v-model="someText"
+                    v-model="name2.value.value"
                     color="orange-lighten-1"
                     variant="outlined"
-                    :rules="rules"
-                    label="Enter some text"
+                    :counter="10"
+                    :error-messages="name2.errorMessage.value"
+                    label="Name"
                   ></v-text-field>
+
+                  <v-text-field
+                    v-model="calories.value.value"
+                    color="orange-lighten-1"
+                    variant="outlined"
+                    :counter="7"
+                    :error-messages="calories.errorMessage.value"
+                    label="Calories"
+                  ></v-text-field>
+
                   <v-btn
-                    class="mt-2"
+                    class="me-4"
                     type="submit"
-                    block
                     color="blue-darken-1"
                     variant="elevated"
-                    @click="display_text"
                   >
-                    Submit
+                    submit
                   </v-btn>
-                </v-form>
-              </v-sheet>
-            </v-card>
+
+                  <v-btn
+                    @click="handleReset"
+                    color="red-darken-1"
+                    variant="elevated"
+                  >
+                    clear
+                  </v-btn>
+                </form>
+              </v-container>
+            </v-card> -->
           </v-col>
         </v-row>
       </v-main>
     </v-layout>
-
   </v-card>
 </template>
